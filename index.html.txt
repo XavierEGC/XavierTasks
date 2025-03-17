@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XavierTasks | Organizador de Tareas</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --text-color: #333;
+            --background-color: #f5f5f5;
+            --card-color: #fff;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: #777;
+            font-size: 1.1rem;
+        }
+
+        .task-form {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-control {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .form-control input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-control input:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .priority-select {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .priority-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            background-color: #eee;
+        }
+
+        .priority-option.selected {
+            color: white;
+            font-weight: bold;
+        }
+
+        .priority-option.low.selected {
+            background-color: var(--success-color);
+        }
+
+        .priority-option.medium.selected {
+            background-color: var(--warning-color);
+        }
+
+        .priority-option.high.selected {
+            background-color: var(--danger-color);
+        }
+
+        .tasks-container {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .tasks-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-options {
+            display: flex;
+        }
+
+        .filter-option {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-option.active {
+            background-color: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .task-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-content input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .task-content span {
+            font-size: 1.1rem;
+            transition: text-decoration 0.3s ease;
+        }
+
+        .completed span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .priority-low {
+            background-color: var(--success-color);
+        }
+
+        .priority-medium {
+            background-color: var(--warning-color);
+        }
+
+        .priority-high {
+            background-color: var(--danger-color);
+        }
+
+        .task-actions {
+            display: flex;
+        }
+
+        .task-actions button {
+            background-color: transparent;
+            color: #888;
+            padding: 5px;
+            margin-left: 10px;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .task-actions button:hover {
+            color: var(--text-color);
+        }
+
+        .delete-btn:hover {
+            color: var(--danger-color);
+        }
+
+        .edit-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .empty-list {
+            text-align: center;
+            padding: 30px 20px;
+            color: #888;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+        }
+
+        @media (max-width: 600px) {
+            .task-form {
+                padding: 15px;
+            }
+            .filter-options {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>XavierTasks</h1>
+            <p>Tu organizador de tareas personal</p>
+        </header>
+
+        <div class="task-form">
+            <div class="form-control">
+                <input type="text" id="task-input" placeholder="Añadir nueva tarea...">
+            </div>
+            <div class="priority-select">
+                <div class="priority-option low selected" data-priority="low">Baja</div>
+                <div class="priority-option medium" data-priority="medium">Media</div>
+                <div class="priority-option high" data-priority="high">Alta</div>
+            </div>
+            <button id="add-task-btn">Añadir Tarea</button>
+        </div>
+
+        <div class="tasks-container">
+            <div class="tasks-header">
+                <h2>Mis Tareas</h2>
+                <div class="filter-options">
+                    <div class="filter-option active" data-filter="all">Todas</div>
+                    <div class="filter-option" data-filter="active">Activas</div>
+                    <div class="filter-option" data-filter="completed">Completadas</div>
+                </div>
+            </div>
+            <ul class="task-list" id="task-list">
+                <!-- Las tareas se agregarán aquí mediante JavaScript -->
+                <li class="empty-list">No hay tareas. ¡Añade algunas!</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Desarrollado por Xavier - &copy; 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos del DOM
+            const taskInput = document.getElementById('task-input');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const taskList = document.getElementById('task-list');
+            const priorityOptions = document.querySelectorAll('.priority-option');
+            const filterOptions = document.querySelectorAll('.filter-option');
+            
+            // Estado inicial
+            let currentPriority = 'low';
+            let currentFilter = 'all';
+            
+            // Cargar tareas desde localStorage
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            
+            // Funciones
+            const saveTasks = () => {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            };
+            
+            const renderTasks = () => {
+                // Filtrar tareas según el filtro actual
+                const filteredTasks = tasks.filter(task => {
+                    if (currentFilter === 'all') return true;
+                    if (currentFilter === 'active') return !task.completed;
+                    if (currentFilter === 'completed') return task.completed;
+                });
+                
+                // Limpiar la lista
+                taskList.innerHTML = '';
+                
+                // Mostrar mensaje si no hay tareas
+                if (filteredTasks.length === 0) {
+                    taskList.innerHTML = '<li class="empty-list">No hay tareas. ¡Añade algunas!</li>';
+                    return;
+                }
+                
+                // Renderizar tareas
+                filteredTasks.forEach(task => {
+                    const taskItem = document.createElement('li');
+                    taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    taskItem.innerHTML = `
+                        <div class="task-content">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''}>
+                            <div class="task-priority priority-${task.priority}"></div>
+                            <span>${task.text}</span>
+                        </div>
+                        <div class="task-actions">
+                            <button class="edit-btn">✏️</button>
+                            <button class="delete-btn">🗑️</button>
+                        </div>
+                    `;
+                    
+                    // Eventos para la tarea
+                    const checkbox = taskItem.querySelector('input[type="checkbox"]');
+                    checkbox.addEventListener('change', () => {
+                        task.completed = checkbox.checked;
+                        taskItem.classList.toggle('completed', task.completed);
+                        saveTasks();
+                    });
+                    
+                    const deleteBtn = taskItem.querySelector('.delete-btn');
+                    deleteBtn.addEventListener('click', () => {
+                        tasks = tasks.filter(t => t.id !== task.id);
+                        saveTasks();
+                        renderTasks();
+                    });
+                    
+                    const editBtn = taskItem.querySelector('.edit-btn');
+                    editBtn.addEventListener('click', () => {
+                        const newText = prompt('Editar tarea:', task.text);
+                        if (newText !== null && newText.trim() !== '') {
+                            task.text = newText.trim();
+                            saveTasks();
+                            renderTasks();
+                        }
+                    });
+                    
+                    taskList.appendChild(taskItem);
+                });
+            };
+            
+            const addTask = () => {
+                const text = taskInput.value.trim();
+                if (text === '') return;
+                
+                const newTask = {
+                    id: Date.now(),
+                    text,
+                    completed: false,
+                    priority: currentPriority,
+                    createdAt: new Date()
+                };
+                
+                tasks.push(newTask);
+                saveTasks();
+                renderTasks();
+                
+                // Limpiar input
+                taskInput.value = '';
+                taskInput.focus();
+            };
+            
+            // Event Listeners
+            addTaskBtn.addEventListener('click', addTask);
+            
+            taskInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+            
+            priorityOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Quitar selección anterior
+                    priorityOptions.forEach(opt => opt.classList.remove('selected'));
+                    // Seleccionar nueva opción
+                    option.classList.add('selected');
+                    currentPriority = option.dataset.priority;
+                });
+            });
+            
+            filterOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Quitar selección anterior
+                    filterOptions.forEach(opt => opt.classList.remove('active'));
+                    // Seleccionar nueva opción
+                    option.classList.add('active');
+                    currentFilter = option.dataset.filter;
+                    renderTasks();
+                });
+            });
+            
+            // Inicializar
+            renderTasks();
+        });
+    </script>
+</body>
+</html>
